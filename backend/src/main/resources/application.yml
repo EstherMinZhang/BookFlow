@@ -1,0 +1,22 @@
+spring:
+  # 数据源配置：默认使用 H2 内存数据库，本地启动时不需要额外安装 PostgreSQL。
+  # 部署或连接本地 PostgreSQL 时，可以通过环境变量覆盖这些值。
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:bookflow;MODE=PostgreSQL;DATABASE_TO_UPPER=false}
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
+  jpa:
+    hibernate:
+      # 开发阶段自动同步表结构；生产环境后续可以改为 validate 并配合迁移工具。
+      ddl-auto: update
+    # 关闭 Open Session in View，避免在 Controller 层意外触发懒加载查询。
+    open-in-view: false
+    properties:
+      hibernate:
+        # 默认使用 H2 方言；连接 PostgreSQL 时通过环境变量切换方言。
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.H2Dialect}
+        format_sql: true
+
+server:
+  # 本地默认 8080，部署平台也可以通过 PORT 环境变量指定端口。
+  port: ${PORT:8080}
