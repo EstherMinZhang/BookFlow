@@ -18,7 +18,7 @@ BookFlow is a full-stack bookstore inventory management system built with a Spri
 Install frontend dependencies once after cloning the project, after deleting `node_modules`, or after dependency changes:
 
 ```powershell
-cd C:\UBC\projects\BookFlow\frontend
+cd frontend
 npm install
 ```
 
@@ -26,33 +26,23 @@ You do not need to run `npm install` every time.
 
 ## Run Locally
 
-Open two terminals.
+Open two terminals from the project root.
 
 Terminal 1, backend:
 
 ```powershell
-cd C:\UBC\projects\BookFlow\backend
+cd backend
 mvn spring-boot:run
 ```
 
 Terminal 2, frontend:
 
 ```powershell
-cd C:\UBC\projects\BookFlow\frontend
+cd frontend
 npm run dev
 ```
 
-Then open:
-
-```text
-http://127.0.0.1:5173/
-```
-
-The backend API runs at:
-
-```text
-http://localhost:8080
-```
+Then open the frontend URL shown in the frontend terminal.
 
 ## API Endpoints
 
@@ -107,9 +97,9 @@ By default, local development uses H2 in-memory database, so data resets when th
 To run against PostgreSQL, set:
 
 ```powershell
-$env:DATABASE_URL = "jdbc:postgresql://localhost:5432/bookflow"
-$env:DATABASE_USERNAME = "postgres"
-$env:DATABASE_PASSWORD = "postgres"
+$env:DATABASE_URL = "<your-postgresql-jdbc-url>"
+$env:DATABASE_USERNAME = "<your-database-username>"
+$env:DATABASE_PASSWORD = "<your-database-password>"
 $env:HIBERNATE_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
 ```
 
@@ -118,14 +108,14 @@ $env:HIBERNATE_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
 Backend tests:
 
 ```powershell
-cd C:\UBC\projects\BookFlow\backend
+cd backend
 mvn test
 ```
 
 Frontend build:
 
 ```powershell
-cd C:\UBC\projects\BookFlow\frontend
+cd frontend
 npm run build
 ```
 
