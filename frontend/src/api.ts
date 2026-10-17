@@ -77,7 +77,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       const details = error.details?.join(" ");
       message = [error.message, details].filter(Boolean).join(" ");
     } catch {
-      // Keep the fallback message when the response body is not JSON.
     }
     throw new Error(message);
   }
@@ -104,10 +103,40 @@ export const api = {
     request<Customer>(`/api/customers/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
   deleteCustomer: (id: number) => request<void>(`/api/customers/${id}`, { method: "DELETE" }),
 
-  getOrders: () => request<Order[]>("/api/orders"),
+  getOrders: async () => (await request<RawOrder[]>("/api/orders")).map(toOrder),
   checkout: (customerId: number, items: CheckoutItemPayload[]) =>
-    request<Order>("/api/orders/checkout", {
+    request<RawOrder>("/api/orders/checkout", {
       method: "POST",
       body: JSON.stringify({ customerId, items })
-    })
+    }).then(toOrder)
 };
+
+type RawOrder = {
+  id: number;
+  customer: Customer;
+  totalAmount: number;
+  createdAt: string;
+  items: Array<{
+    book: Book;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+  }>;
+};
+
+function toOrder(order: RawOrder): Order {
+  return {
+    id: order.id,
+    customerId: order.customer.id,
+    customerName: order.customer.name,
+    totalAmount: order.totalAmount,
+    createdAt: order.createdAt,
+    items: order.items.map((item) => ({
+      bookId: item.book.id,
+      title: item.book.title,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      lineTotal: item.lineTotal
+    }))
+  };
+}

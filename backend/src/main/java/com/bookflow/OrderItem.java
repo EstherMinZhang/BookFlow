@@ -1,4 +1,4 @@
-package com.bookflow.orders;
+package com.bookflow;
 
 import java.math.BigDecimal;
 
@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.bookflow.books.Book;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "order_items")
@@ -22,20 +22,18 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 所属订单。
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     private CustomerOrder order;
 
-    // 被购买的图书。
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
     @Column(nullable = false)
     private Integer quantity;
 
-    // 下单时的图书单价，避免之后图书价格变化影响历史订单。
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal unitPrice;
 
@@ -52,31 +50,11 @@ public class OrderItem {
         this.lineTotal = lineTotal;
     }
 
-    void setOrder(CustomerOrder order) {
-        this.order = order;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public CustomerOrder getOrder() {
-        return order;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
-
-    public BigDecimal getLineTotal() {
-        return lineTotal;
-    }
+    void setOrder(CustomerOrder order) { this.order = order; }
+    public Long getId() { return id; }
+    public CustomerOrder getOrder() { return order; }
+    public Book getBook() { return book; }
+    public Integer getQuantity() { return quantity; }
+    public BigDecimal getUnitPrice() { return unitPrice; }
+    public BigDecimal getLineTotal() { return lineTotal; }
 }

@@ -1,4 +1,4 @@
-package com.bookflow.orders;
+package com.bookflow;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -18,23 +18,18 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
-import com.bookflow.customers.Customer;
-
 @Entity
 @Table(name = "customer_orders")
 public class CustomerOrder {
 
-    // 订单主键，表名不用 orders，避免和部分数据库关键字冲突。
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 下单顾客，多个订单可以属于同一个顾客。
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    // 订单项跟随订单一起保存。
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
@@ -53,32 +48,17 @@ public class CustomerOrder {
     }
 
     @PrePersist
-    void onCreate() {
-        createdAt = Instant.now();
-    }
+    void created() { createdAt = Instant.now(); }
 
     public void addItem(OrderItem item) {
         items.add(item);
         item.setOrder(this);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public List<OrderItem> getItems() {
-        return items;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+    public Long getId() { return id; }
+    public Customer getCustomer() { return customer; }
+    public List<OrderItem> getItems() { return items; }
+    public BigDecimal getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+    public Instant getCreatedAt() { return createdAt; }
 }

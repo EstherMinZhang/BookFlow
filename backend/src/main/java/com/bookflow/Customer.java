@@ -1,4 +1,4 @@
-package com.bookflow.customers;
+package com.bookflow;
 
 import java.time.Instant;
 
@@ -10,30 +10,41 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "customers")
 public class Customer {
 
-    // 顾客主键，由数据库自动生成。
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
-    // 顾客姓名和邮箱是订单归属所需的基础信息。
+    @NotBlank
+    @Size(max = 120)
     @Column(nullable = false, length = 120)
     private String name;
 
+    @NotBlank
+    @Email
+    @Size(max = 160)
     @Column(nullable = false, unique = true, length = 160)
     private String email;
 
+    @Size(max = 40)
     @Column(length = 40)
     private String phone;
 
-    // 审计字段：记录创建和更新时间。
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(nullable = false)
     private Instant updatedAt;
 
@@ -47,50 +58,22 @@ public class Customer {
     }
 
     @PrePersist
-    void onCreate() {
+    void created() {
         Instant now = Instant.now();
         createdAt = now;
         updatedAt = now;
     }
 
     @PreUpdate
-    void onUpdate() {
-        updatedAt = Instant.now();
-    }
+    void updated() { updatedAt = Instant.now(); }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+    public Instant getCreatedAt() { return createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
 }

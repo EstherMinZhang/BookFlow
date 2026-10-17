@@ -1,5 +1,6 @@
 # BookFlow
 
+
 BookFlow is a full-stack bookstore inventory management system built with a Spring Boot REST API backend, a React TypeScript frontend, and database support for PostgreSQL.
 
 ## Current Features
@@ -119,9 +120,22 @@ cd frontend
 npm run build
 ```
 
+## CI/CD
+
+The workflow is defined in `.github/workflows/ci-cd.yml`.
+
+- Every push and every pull request targeting `main` runs backend tests and the frontend build in parallel.
+- Backend: Java 8, Maven `clean verify`, and a temporary PostgreSQL 16 service. Missing tests fail the build.
+- Frontend: Node.js 22, locked dependency installation with `npm ci`, TypeScript checks, and the Vite production build. There is no separate frontend unit test suite yet.
+- Test reports and successful build artifacts are retained for seven days.
+- Azure deployment jobs run only on `main` outside pull requests, after checks pass, and when the repository variable `AZURE_DEPLOY_ENABLED` is explicitly set to `true`. Leave it unset while setting up CI.
+
+Local verification uses the same build commands. Backend tests default to H2 locally; CI switches them to PostgreSQL with `TEST_DATABASE_*` and `TEST_HIBERNATE_DIALECT`. A local pass does not verify the GitHub runner or Azure deployment.
+
+After the first successful GitHub run, configure branch protection for `main` to require the `Backend tests and build` and `Frontend typecheck and build` checks before merging. Adding the workflow alone does not enable branch protection.
+
 ## Next Steps
 
-- Configure PostgreSQL for local development or RDS for production.
-- Deploy backend to AWS Elastic Beanstalk.
-- Deploy frontend to S3 and CloudFront.
-- Add GitHub Actions CI/CD.
+- Push and verify the workflow in GitHub Actions after reviewing the local changes.
+- Create Azure Database for PostgreSQL, Azure App Service for the backend, and Azure Static Web Apps for the frontend.
+- Configure production database settings, CORS, deployment credentials, and the frontend API URL before enabling Azure deployments.
